@@ -86,33 +86,60 @@ func main(){
 	fmt.Println("------------------")
 
 	rand.Seed(time.Now().Unix())
-	playerResult := rand.Intn(52)
-	fmt.Printf("あなたの引いたカードは%sの%vです\n", Cards[playerResult].Suit, Cards[playerResult].Rank)
-	player.HasCards = append(player.HasCards, Cards[playerResult])
-	player.Score += Cards[playerResult].Value
 
-	playerResult = rand.Intn(52)
-	fmt.Printf("あなたの引いたカードは%sの%vです\n", Cards[playerResult].Suit, Cards[playerResult].Rank)
-	player.HasCards = append(player.HasCards, Cards[playerResult])
-	player.Score += Cards[playerResult].Value
+	player.HasCards = append(player.HasCards, DrawCard(true))
+	player.Score = CalcScore(player.HasCards)
+
+	player.HasCards = append(player.HasCards, DrawCard(true))
+	player.Score = CalcScore(player.HasCards)
 
 	fmt.Println("------------------")
 
-	dealerResult := rand.Intn(52)
-	fmt.Printf("ディーラーの引いたカードは%sの%vです\n", Cards[dealerResult].Suit, Cards[dealerResult].Rank)
-	dealer.HasCards = append(dealer.HasCards, Cards[dealerResult])
-	dealer.Score += Cards[dealerResult].Value
+	dealer.HasCards = append(dealer.HasCards, DrawCard(false))
+	dealer.Score = CalcScore(dealer.HasCards)
 
-	dealerResult = rand.Intn(52)
-	fmt.Printf("ディーラーの引いたカードは%sの%vです\n", Cards[dealerResult].Suit, Cards[dealerResult].Rank)
-	dealer.HasCards = append(dealer.HasCards, Cards[dealerResult])
-	dealer.Score += Cards[dealerResult].Value
+	dealer.HasCards = append(dealer.HasCards, DrawCard(false))
+	dealer.Score = CalcScore(dealer.HasCards)
 
 	fmt.Println("------------------")
 
-	fmt.Printf("あなたの現在の得点は%v点です\n", player.Score)
-	fmt.Printf("カードを引きますか？")
-	fmt.Printf("引く場合はYを、引かない場合はNを押してください\n")
+	for str := ""; str != "N" ; {
+		fmt.Printf("あなたの現在の得点は%v点です\n", player.Score)
+		fmt.Printf("カードを引きますか？")
+		fmt.Printf("引く場合はYを、引かない場合はNを押してください\n")
+		fmt.Scan(&str)
 
-	
+		switch str {
+			case "Y":
+				player.HasCards = append(player.HasCards, DrawCard(true))
+				player.Score = CalcScore(player.HasCards)
+			case "N":
+				break
+		}
+	}
+}
+
+// カードを引く
+func DrawCard(isPlayer bool) Card {
+	result := rand.Intn(52)
+
+	switch isPlayer {
+		case true:
+			fmt.Printf("あなたの引いたカードは%sの%vです\n", Cards[result].Suit, Cards[result].Rank)
+		case false:
+			fmt.Printf("ディーラーの引いたカードは%sの%vです\n", Cards[result].Suit, Cards[result].Rank)
+	}
+
+	return Cards[result]
+}
+
+// 得点を計算する
+func CalcScore(cards []Card) int {
+	sum := 0
+
+	for _,v := range cards{
+		sum += v.Value
+	}
+
+	return sum
 }
